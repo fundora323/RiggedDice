@@ -1,0 +1,60 @@
+modules = ["nodejs-20"]
+
+[nix]
+channel = "stable-24_05"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "DiscordBot"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "WebSocket Server"
+
+[[workflows.workflow]]
+name = "DiscordBot"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd discord_bot && node index.js"
+
+[[workflows.workflow]]
+name = "WebSocket Server"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd websocket_server && npm install ws dotenv && node server.js"
+waitForPort = 5000
+
+[deployment]
+run = ["sh", "-c", "cd websocket_server && npm install ws dotenv && node server.js"]
+
+[[ports]]
+localPort = 5000
+externalPort = 5000
+
+[[ports]]
+localPort = 8000
+externalPort = 80
